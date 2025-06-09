@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-breeders/models"
+	"go-breeders/configuration"
 	"log"
 	"testing"
 )
@@ -15,6 +15,6 @@ func TestMain(m *testing.T) {
 		log.Panic(err)
 	}
 	testApp = application{
-		Models: *models.New(db),
+		App: configuration.New(db),
 	}
 }
