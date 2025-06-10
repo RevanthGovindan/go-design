@@ -9,6 +9,7 @@ var repo Repository
 
 type Models struct {
 	DogBreed DogBreed
+	Dog      Dog
 }
 
 func New(conn *sql.DB) *Models {
@@ -20,6 +21,17 @@ func New(conn *sql.DB) *Models {
 	return &Models{
 		DogBreed: DogBreed{},
 	}
+}
+
+type DogOfMonth struct {
+	Id    int
+	Dog   *Dog
+	Video string
+	Image string
+}
+
+func (d *Dog) GetDogOfMonthById(id int) (*DogOfMonth, error) {
+	return repo.GetDogOfMonthById(id)
 }
 
 type DogBreed struct {
@@ -36,6 +48,10 @@ type DogBreed struct {
 
 func (d *DogBreed) All() ([]*DogBreed, error) {
 	return repo.AllDogBreeds()
+}
+
+func (d *DogBreed) GetBreedByName(b string) (*DogBreed, error) {
+	return repo.GetBreedByName(b)
 }
 
 type CatBreed struct {

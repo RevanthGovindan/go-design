@@ -15,6 +15,6 @@ func TestMain(m *testing.T) {
 		log.Panic(err)
 	}
 	testApp = application{
-		App: configuration.New(db),
+		App: configuration.New(db, nil),
 	}
 }

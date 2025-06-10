@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go-breeders/adapters"
 	"go-breeders/configuration"
 	"html/template"
 	"log"
@@ -16,7 +17,6 @@ type application struct {
 	templateMap map[string]*template.Template
 	config      appConfig
 	App         *configuration.Application
-	catService  *RemoteService
 }
 
 type appConfig struct {
@@ -43,13 +43,12 @@ func main() {
 	// 	Remote: jsonBackend,
 	// }
 	// adapter pattern
-	xmlBackend := &xmlBackend{}
-	xmlAdapter := &RemoteService{
+	xmlBackend := &adapters.XmlBackend{}
+	xmlAdapter := &adapters.RemoteService{
 		Remote: xmlBackend,
 	}
 
-	app.App = configuration.New(db)
-	app.catService = xmlAdapter
+	app.App = configuration.New(db, xmlAdapter)
 
 	server := &http.Server{
 		Handler:           app.routes(),
