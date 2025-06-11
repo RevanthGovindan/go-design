@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-breeders/adapters"
 	"go-breeders/configuration"
+	"go-breeders/streamer"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ type application struct {
 	templateMap map[string]*template.Template
 	config      appConfig
 	App         *configuration.Application
+	videoQueue  chan streamer.VideoProcessingJob
 }
 
 type appConfig struct {
@@ -25,7 +27,18 @@ type appConfig struct {
 }
 
 func main() {
-	var app = application{templateMap: make(map[string]*template.Template)}
+	const numWorkers = 4
+
+	videoQueue := make(chan streamer.VideoProcessingJob, numWorkers)
+	defer close(videoQueue)
+
+	var app = application{
+		templateMap: make(map[string]*template.Template),
+		videoQueue:  videoQueue,
+	}
+
+	wp := streamer.New(videoQueue, numWorkers)
+	wp.Run()
 
 	flag.BoolVar(&app.config.useCache, "cache", false, "use template cache")
 	flag.StringVar(&app.config.dsn, "dsn", "mariadb:myverysecretpassword@tcp(localhost:3306)/breeders?parseTime=true&tls=false&collation=utf8_unicode_ci&timeout=5s", "dsn")
